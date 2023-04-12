@@ -6,14 +6,26 @@ import { ThirdwebAuthContext, ThirdwebAuthUser } from "../types";
 function getToken(
   req: GetServerSidePropsContext["req"] | NextRequest | NextApiRequest,
 ): string | undefined {
-  if (!!(req as NextRequest).headers.get("authorization")) {
-    const authorizationHeader = (req as NextRequest).headers.get("authorization")?.split(" ");
-    if (authorizationHeader?.length === 2) {
-      return authorizationHeader[1];
-    }
+  if (typeof req.headers.get === "function") {
+    if (!!(req as NextRequest).headers.get("authorization")) {
+      const authorizationHeader = (req as NextRequest).headers.get("authorization")?.split(" ");
+      if (authorizationHeader?.length === 2) {
+        return authorizationHeader[1];
+      }
 
-    return undefined;
+      return undefined;
+    }
+  } else {
+    if (!!(req as NextApiRequest).headers["authorization"]) {
+      const authorizationHeader = (req as NextApiRequest).headers["authorization"]?.split(" ");
+      if (authorizationHeader?.length === 2) {
+        return authorizationHeader[1];
+      }
+
+      return undefined;
+    }
   }
+
 
   const cookie: string | undefined = !req.cookies
     ? undefined

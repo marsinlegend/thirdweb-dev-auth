@@ -9,12 +9,22 @@ require('ethers');
 require('uuid');
 
 function getToken(req) {
-  if (!!req.headers.get("authorization")) {
-    const authorizationHeader = req.headers.get("authorization")?.split(" ");
-    if (authorizationHeader?.length === 2) {
-      return authorizationHeader[1];
+  if (typeof req.headers.get === "function") {
+    if (!!req.headers.get("authorization")) {
+      const authorizationHeader = req.headers.get("authorization")?.split(" ");
+      if (authorizationHeader?.length === 2) {
+        return authorizationHeader[1];
+      }
+      return undefined;
     }
-    return undefined;
+  } else {
+    if (!!req.headers["authorization"]) {
+      const authorizationHeader = req.headers["authorization"]?.split(" ");
+      if (authorizationHeader?.length === 2) {
+        return authorizationHeader[1];
+      }
+      return undefined;
+    }
   }
   const cookie = !req.cookies ? undefined : typeof req.cookies.get === "function" ? req.cookies.get("thirdweb_auth_token") : req.cookies.thirdweb_auth_token;
   return cookie;
